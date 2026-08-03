@@ -266,6 +266,12 @@
     document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active'));
     this.classList.add('active');
   }));
+  // deep-link: #evaluate / #frontmatter selects the screen on load
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h==='evaluate') show('evaluate',document.querySelectorAll('.rail .step')[2]);
+    else if(h==='frontmatter') show('frontmatter',document.querySelectorAll('.rail .step')[1]);
+  })();
 </script>
 </body>
 </html>
