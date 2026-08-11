@@ -1,4 +1,4 @@
-# PRD: Advanced Work onboarding in the Nexus registration flow
+# PRD: Advanced Work items in the Nexus tool Lifecycle phases
 
 | | |
 |---|---|
@@ -12,249 +12,170 @@
 
 ## 1. Summary
 
-Today a partner can complete the BizChat Built-In MCP onboarding in Nexus and still
-miss everything required to ship the same tool for **Advanced Work (FluxV4 / inner-grain)**.
-Advanced Work readiness — Code Harness integration, FluxV4 SEVALs, Inception Bench —
-lives in separate docs, review forums, and tribal knowledge instead of in the official
-Nexus onboarding flow.
+**The tool-creation / registration flow does not change.** A partner registers an MCP
+server, Plugin, or Agent Skill in Nexus exactly as they do today.
 
-This PRD extends the existing Nexus registration flow into a **single onboarding
-lifecycle** that covers both:
+What changes is the **tool Lifecycle** — the per-tool phase checklist shown on the
+Lifecycle tab (Phase 1 → Phase 7). Today those phases capture mainline / outer-grain
+work: trigger-query generation, design review, SEVALs, flight review, etc. They do
+**not** yet capture what a tool needs to ship for **Advanced Work (FluxV4 / inner-grain)**
+— Code Harness integration, FluxV4 SEVALs, and Inception Bench — which live in separate
+docs and forums.
 
-1. **BizChat mainline / outer-grain** scenarios, and
-2. **Advanced Work (FluxV4) / inner-grain** scenarios.
+This PRD adds those Advanced Work items **into the existing phases**, alongside the
+mainline items already there. Every added item carries applicability context:
 
-Rather than standing up a parallel Advanced Work process, we reuse the existing
-Nexus + Alchemy flow and add explicit Advanced Work readiness gates, evaluations, and
-rollout requirements.
+- 🟦 **All tools** — already required today; unchanged.
+- 🟪 **Advanced Work only** — **complete only if this tool is for Advanced Work.** If the
+  tool is not for Advanced Work, the item does not apply and the phase copy says so.
 
-**The core requirement for every change below: each Nexus task must state its own
-applicability context.** A task carries one of two labels:
+> **The ask:** if a SEVAL (e.g. FluxV4) or the Inception Bench regression is only
+> required for Advanced Work, the phase item must explicitly say "complete this only if
+> this tool is for Advanced Work." No item should be ambiguous about who it applies to.
 
-- 🟦 **ALL tools** — required for every tool onboarding through Nexus.
-- 🟪 **Advanced Work only** — required only when the tool is being onboarded for
-  Advanced Work. If a partner is not onboarding for Advanced Work, the task is skipped,
-  and the task copy must say so.
-
-> **Why the labels matter (the ask):** if a SEVAL (e.g. FluxV4) is only required for
-> Advanced Work, the Nexus task must say "complete this only if this tool is for
-> Advanced Work." Likewise the Inception Bench task must note that it needs to be
-> completed only if the tool is for Advanced Work. No task should be ambiguous about
-> whether it applies to the partner in front of it.
-
-> **Scope note (Pranita, review comment):** although the source doc is framed around
-> MCP, the onboarding scope should also cover **Plugins** and **Agent Skills**, not
-> MCP only. Task copy should be written tool-type-agnostic where possible.
+> **Scope note (Pranita):** although the source is framed around MCP, these phase items
+> should also apply to **Plugins** and **Agent Skills**.
 
 ---
 
-## 2. Current problems
+## 2. What is NOT changing
 
-| Problem | Applies to |
-|---|---|
-| A partner can finish Built-In plugin onboarding and still miss Advanced Work requirements. | 🟪 Advanced Work |
-| Inception Bench evaluation exists separately from the standard flight-review evaluation. | 🟪 Advanced Work |
-| Teams must complete separate workflows, reviews, and forums for inner-grain onboarding. | 🟪 Advanced Work |
-| Operational overhead from maintaining outer-loop and inner-loop onboarding separately. | 🟪 Advanced Work |
+- The registration / tool-intake / manifest steps for creating a tool.
+- The order or identity of the Lifecycle phases (Phase 1–7).
+- Any mainline requirement that exists today.
 
----
-
-## 3. Current ("as-is") flow
-
-### 3.1 Outer-grain (BizChat mainline) — the canonical path
-
-| # | Task | Applies to |
-|---|---|---|
-| 1 | Generate trigger / non-trigger query sets (SubstrateTools **QuerySetGen**). | 🟦 ALL tools |
-| 2 | Copilot Design Review — descriptions, trigger queries, conflict assessment, architecture (async, Alchemy vTeam). | 🟦 ALL tools |
-| 3 | MCP registration in Nexus — Nexus generates integration artifacts + onboarding PR. | 🟦 ALL tools |
-| 4 | Run SEVALs — 1K, DA, RAI regression, Shadow experiment. | 🟦 ALL tools |
-| 5 | Flight review — progression SDF → MSIT → WW. | 🟦 ALL tools |
-| 6 | Compliance sign-offs — Compliance, Security, Privacy, RAI. | 🟦 ALL tools |
-
-### 3.2 Inner-grain (Advanced Work) — not yet centralized
-
-| # | Requirement | Applies to |
-|---|---|---|
-| A | Create Helix patch — add plugin module to the Code Harness list. | 🟪 Advanced Work only |
-| B | Run Advanced Work evals — FluxV4 SEVALs, existing feature query set, Inception Bench regression set; fill the **Inception Bench Intake Request**. | 🟪 Advanced Work only |
-| C | Attend "Inner Loop – CLI Technical Design Review Slots." | 🟪 Advanced Work only |
-| D | Get approval from the **AdvancedWork crew** and **BizChat Deepwork BPR** before SDF/MSIT/WW rollout in Code Harness. | 🟪 Advanced Work only |
-| E | Attend "Inception Bench Evals – Partner Onboarding Weekly Sync." | 🟪 Advanced Work only |
+Advanced Work is added as **extra items inside phases**, gated on a single "Is this tool
+for Advanced Work?" attribute on the tool. When that attribute is false, the Advanced
+Work items are shown as *not applicable* and skipped.
 
 ---
 
-## 4. Proposed unified flow ("to-be")
+## 3. Phase-by-phase updates
 
-Order reflects Pranita's review comment: **design review cannot happen before Nexus
-intake.** The corrected sequence is intake → trigger queries → design review →
-auto-generated code → evaluations → flighting.
+Each phase lists **Today** (unchanged) and **Added for Advanced Work** (new, 🟪 only if
+the tool is for Advanced Work).
 
-### Task 1 — Nexus tool intake
-Partner submits the Nexus intake first. This is the entry point for every tool type
-(MCP, Plugin, Agent Skill).
-- **Applies to:** 🟦 ALL tools.
-- **Advanced Work context:** intake form must capture an **"Is this tool for Advanced
-  Work?"** answer, because that single answer drives which 🟪 tasks below become required.
+### Phase 1 — Pre-Coding Gate
 
-### Task 2A — Create trigger queries
-Expand from outer-grain only to also cover inner-grain / Advanced Work and
-create-task-style Advanced Work flows, producing **one evaluation set covering both
-execution modes**.
-- **Applies to:** 🟦 ALL tools generate outer-grain queries.
-- **Advanced Work context:** 🟪 inner-grain + create-task query coverage is required
-  **only if the tool is for Advanced Work**. Existing standard tools stay outer-grain
-  only unless they are onboarded into Advanced Work.
-- **Open item (Larissa):** FluxV4 uses **ChecklistLeo** while mainline uses **LMC
-  Checklist**, and ChecklistLeo is not fully supported by SEVAL — align on the final
-  query-set format and SEVAL support before this task is mandatory.
+**Today (🟦 all tools)**
+- Generate trigger / non-trigger query sets (SubstrateTools **QuerySetGen**).
+- Copilot Design Review (async, Alchemy vTeam): descriptions, trigger quality,
+  conflicts, architecture.
 
-### Task 2B — Copilot Design Review
-Existing review scope (descriptions, trigger quality, architecture) plus new scope
-(Advanced Work readiness, inner-grain scenarios).
-- **Applies to:** 🟦 ALL tools.
-- **Advanced Work context:** the Advanced Work readiness review and an **Inception
-  Bench reviewer** (suggested: Maryna, Vinay) are added **only when Advanced Work
-  support is intended**.
+**Added for Advanced Work (🟪 only if the tool is for Advanced Work)**
+- **Trigger-query evals must also cover inner-grain / Advanced Work and create-task-style
+  flows** — one set covering both execution modes. Update the Nexus task description +
+  playbook and improve QuerySetGen automation for inner-grain coverage.
+- **Design review adds Advanced Work readiness + inner-grain scenarios**, and adds an
+  **Inception Bench reviewer** to the vTeam (suggested: Maryna, Vinay).
+- **Open item (Larissa):** FluxV4 uses **ChecklistLeo**, mainline uses **LMC Checklist**;
+  ChecklistLeo is not fully SEVAL-supported. Align the query-set format + SEVAL support
+  before this item is mandatory.
 
-### Task 3 — Nexus registration / auto-generated code
-Extend Nexus code generation to emit **mainline integration** and, when applicable,
-**Advanced Work Code Harness integration**, potentially behind the same flight config.
-- **Applies to:** 🟦 ALL tools get mainline integration generated.
-- **Advanced Work context:** 🟪 the additional Code Harness integration is generated
-  **only if the tool is for Advanced Work**. (Pranita: proposal is feasible; provide
-  **sample PRs** demonstrating the pattern.)
+### Phase 2 — Registration & Validation
 
-### Task 4 — Unified evaluations
-| Evaluation | Applies to |
-|---|---|
-| 1K SEVAL | 🟦 ALL tools |
-| DA SEVAL | 🟦 ALL tools |
-| RAI SEVAL | 🟦 ALL tools |
-| Shadow experiment | 🟦 ALL tools |
-| **Inception Bench** | 🟪 **Advanced Work only** — complete only if the tool is for Advanced Work |
-| **FluxV4 validation** | 🟪 **Advanced Work only** |
-| **Inner-grain validation** | 🟪 **Advanced Work only** |
+**Today (🟦 all tools)**
+- Tool is registered/validated; Nexus generates integration artifacts.
 
-- **Advanced Work context:** the task must explicitly tell the partner that Inception
-  Bench, FluxV4, and inner-grain validation are skipped for non–Advanced Work tools.
+**Added for Advanced Work (🟪 only if the tool is for Advanced Work)**
+- Nexus codegen additionally emits the **Advanced Work Code Harness integration**
+  (Helix patch adding the plugin module to the Code Harness list), potentially behind
+  the same flight config.
+- Referenced files: `module_codeHarnessPluginList_deepWorkAndO365Dual.json`,
+  `codeHarnessPluginList.module.json`.
 
-### Task 5 — Unified flight review
-One rollout path to SDF → MSIT → WW, without separate Advanced Work review forums.
-- **Applies to:** 🟦 ALL tools.
-- **Advanced Work context:** 🟪 **Inception Bench regression evidence** is required in
-  the flight review **only for Advanced Work–enabled tools** (modeled on the DA
-  evaluation evidence requirement).
+### Phase 3 — PR Generation
 
----
+**Today (🟦 all tools)**
+- Onboarding PR auto-generated by Nexus.
 
-## 5. Nexus gap analysis & action items
+**Added for Advanced Work (🟪 only if the tool is for Advanced Work)**
+- Generate the **Code Harness integration PR path** in addition to the mainline PR.
+- (Pranita: proposal is feasible — link **sample PRs** demonstrating the pattern.)
 
-Every action carries an applicability label so the resulting Nexus task copy inherits it.
+### Phase 4 — Test/Debug
 
-### 5.1 Pre-coding gate
+**Today (🟦 all tools)**
+- Validate / troubleshoot the tool from the Debug tab (DevUI MCP debugging).
 
-**Query set generation** — guidance covers only standard trigger/non-trigger sets;
-missing Advanced Work scenarios and complex inner-grain trigger coverage.
+**Added for Advanced Work (🟪 only if the tool is for Advanced Work)**
+- Add **Advanced Work MCP calls to the DevUI MCP tab** so container-grain invocation can
+  be exercised (current DevUI debugging is insufficient for container-grain).
+- Add **Advanced Work E2E validation guidance**.
 
-| Action | Owner | Applies to |
-|---|---|---|
-| Edit Nexus task description to call out Advanced Work coverage | Nexus / Playbook owners | 🟪 Advanced Work gap |
-| Update the playbook | Nexus / Playbook owners | 🟪 Advanced Work gap |
-| Improve QuerySetGen automation for inner-grain | QuerySetGen team | 🟪 Advanced Work |
+### Phase 5 — PR Deployment Tracking
 
-**vTeam async review** — Advanced Work requirements are not reviewed today.
+**Today (🟦 all tools)**
+- Track completed PR rollout via the Feature Progress tab / deployment dashboard;
+  observability.
 
-| Action | Owner | Applies to |
-|---|---|---|
-| Align vTeam on Advanced Work requirements | Alchemy vTeam | 🟪 Advanced Work |
-| Add an Inception Bench reviewer (e.g. Maryna, Vinay) | Inception Bench team | 🟪 Advanced Work |
+**Added items**
+- **Verify monitoring covers the Advanced Work path** — 🟪 only if the tool is for
+  Advanced Work.
+- Investigate missing Power BI plugin telemetry in Nexus observability — ⬜ general.
+- Document rollback criteria and reliability expectations — ⬜ general.
 
-### 5.2 Build
+### Phase 6 — Tool Discovery & Fine-Tuning
 
-**Flight review submission** — Inception Bench is not part of the standard flight-review
-job template.
+**Today (🟦 all tools)**
+- Run a manual query in the dev UI against SDF to confirm triggering; discoverability
+  testing; outer-loop evaluation (precision, recall, parameter accuracy).
 
-| Action | Applies to |
-|---|---|
-| Add Inception Bench to the Flight Review Job Group | 🟪 Advanced Work |
-| Support ChecklistLeo assertions in SEVAL | 🟪 Advanced Work |
-| Define pass/fail thresholds | 🟪 Advanced Work |
-| Define regression-handling templates | 🟪 Advanced Work |
+**Added for Advanced Work (🟪 only if the tool is for Advanced Work)**
+- Add **Advanced Work–specific quality guidance** giving separate visibility into
+  inner-grain quality (beyond precision / recall / parameter accuracy).
 
-Dependencies: ChecklistLeo, LMC assertions, SEVAL platform.
+### Phase 7 — SEVAL & Flight Review
 
-### 5.3 Quality
+**Today (🟦 all tools)**
+- SEVALs: **1K, DA, RAI regression, Shadow experiment**.
+- Flight review, progression **SDF → MSIT → WW**.
+- Compliance sign-offs: Compliance, Security, Privacy, RAI.
 
-| Action | Applies to |
-|---|---|
-| New task: run **Inception Bench regression test** (non-regression check) | 🟪 Advanced Work only |
-| Add Advanced Work–specific quality guidance (inner-grain visibility beyond precision / recall / parameter accuracy) | 🟪 Advanced Work |
-| Add **Code Harness flighting** instructions (`module_codeHarnessPluginList_deepWorkAndO365Dual.json`, `codeHarnessPluginList.module.json`) | 🟪 Advanced Work |
-| Update generated code path for Code Harness flighting | 🟪 Advanced Work |
-| Add Advanced Work MCP calls to the DevUI **MCP tab** (container-grain invocation) | 🟪 Advanced Work |
-| Add Advanced Work E2E validation guidance | 🟪 Advanced Work |
-
-### 5.4 Test cluster
-
-| Action | Applies to |
-|---|---|
-| Add **Inception Bench execution** to test-cluster validation | 🟪 Advanced Work |
-
-### 5.5 Ring progression
-
-| Action | Applies to |
-|---|---|
-| Add **Advanced Mode Template Request Intake** to the WW-enable step | 🟪 Advanced Work |
-| Investigate missing Power BI plugin telemetry in Nexus observability | ⬜ General |
-| Verify monitoring covers the Advanced Work path | 🟪 Advanced Work |
-| Document rollback criteria | ⬜ General |
-| Document reliability expectations | ⬜ General |
-
-### 5.6 Other
-
-| Action | Applies to |
-|---|---|
-| Add a new Nexus task category **Advanced Mode Template Request Intake**, parallel to Security / Privacy / RAI signoff | 🟪 Advanced Work only |
+**Added for Advanced Work (🟪 only if the tool is for Advanced Work)**
+- **FluxV4 SEVALs + inner-grain validation** on the unified query set.
+- **Inception Bench:** fill the **Inception Bench Intake Request**; run the **Inception
+  Bench regression set**; add Inception Bench to the **Flight Review Job Group**; attach
+  regression evidence to flight review (modeled on DA evidence). Requires ChecklistLeo
+  assertion support in SEVAL, defined pass/fail thresholds, and regression-handling
+  templates.
+- **Test-cluster validation** additionally runs **Inception Bench execution**.
+- **Enable Worldwide** additionally requires the **Advanced Mode Template Request
+  Intake** (a new Nexus task category, parallel to Security / Privacy / RAI signoff).
+- **Rollout approvals:** AdvancedWork crew + BizChat Deepwork BPR, replacing the separate
+  CLI Technical Design Review and AW forums with this single flight gate.
 
 ---
 
-## 6. Review feedback captured
+## 4. Applicability summary
 
-- **Pranita Kulkarni** — onboarding scope should not be limited to MCP; include
-  **Plugins** and **Agent Skills**.
-- **Pranita Kulkarni** — Nexus registration scope should extend beyond MCP registration
-  to **Agent Skills**.
-- **Pranita Kulkarni** — reorder to: (1) Nexus intake, (2) trigger queries, (3) design
-  review, (4) auto-generated code, (5) evals, (6) flighting — design review depends on
-  Nexus intake.
+### Unchanged today (🟦 all tools, across the phases)
+Query generation · design review · registration/validation · PR generation ·
+Test/Debug · deployment tracking · discovery & fine-tuning · 1K / DA / RAI SEVAL ·
+Shadow · flight review · Compliance / Security / Privacy / RAI signoff.
+
+### Added, Advanced Work only (🟪 complete only if the tool is for Advanced Work)
+Inner-grain trigger-query coverage · AW readiness design review + Inception Bench
+reviewer · Code Harness integration + Helix patch · Code Harness PR path ·
+container-grain Test/Debug (DevUI MCP tab) + AW E2E guidance · AW monitoring
+verification · AW quality guidance · FluxV4 SEVALs + inner-grain validation ·
+Inception Bench intake + regression + flight evidence · Inception Bench in test cluster ·
+Advanced Mode Template Request intake · AdvancedWork crew + Deepwork BPR approval.
+
+---
+
+## 5. Review feedback captured
+
+- **Pranita Kulkarni** — scope should also cover **Plugins** and **Agent Skills**, not
+  MCP only.
 - **Pranita Kulkarni** — Code Harness proposal is feasible; provide **sample PRs**.
 - **Larissa Gomes de Stefano Escaliante** — FluxV4 (**ChecklistLeo**) vs mainline
   (**LMC Checklist**) mismatch; ChecklistLeo not fully SEVAL-supported. Align on the
   final query-set format and SEVAL support.
 
----
+## 6. Open questions
 
-## 7. Open questions
-
-- **Nexus:** How are Nexus tasks added or modified? How does code generation work today?
-  How can Advanced Work requirements be added to code generation?
-- **Rollout:** Should Advanced Work reuse existing forums or separate forums? Should all
-  new MCP servers also onboard to Advanced Work? One shared trigger-query set, or
-  separate inner/outer sets?
-
----
-
-## 8. Applicability summary
-
-### Required for ALL tools (mainline)
-Nexus intake · query generation · design review · MCP registration ·
-1K SEVAL · DA SEVAL · RAI SEVAL · Shadow experiment · flight review ·
-Compliance / Security / Privacy / RAI signoff.
-
-### Advanced Work–only (complete only if the tool is for Advanced Work)
-Code Harness integration · Helix patch · FluxV4 validation · Inception Bench intake ·
-Inception Bench regression testing · CLI Technical Design Review · Deepwork BPR approval ·
-Advanced Work rollout approvals · Advanced Mode Template Request intake ·
-Advanced Work–specific quality evaluation · Advanced Work flighting guidance ·
-container-grain debugging guidance · Advanced Work observability validation.
+- **Nexus:** How are Lifecycle phase items added/modified? How does codegen work today,
+  and how can Advanced Work generation be added?
+- **Rollout:** Reuse existing forums or separate? Should all new MCP servers also onboard
+  to Advanced Work? One shared trigger-query set, or separate inner/outer sets?
