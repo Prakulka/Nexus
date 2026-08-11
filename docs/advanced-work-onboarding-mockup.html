@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nexus · Tool Lifecycle — Advanced Work items</title>
+<style>
+  :root{
+    --bg:#faf9f8; --panel:#fff; --ink:#242424; --sub:#616161; --line:#e6e4e2;
+    --brand:#0f6cbd; --brand-d:#115ea3; --good:#0e700e; --goodbg:#e6f4e6;
+    --warn:#8a6a00; --warnbg:#fff4ce;
+    --all:#0f6cbd; --allbg:#eff6fc; --aw:#8764b8; --awbg:#f4effb; --awline:#e0d4f2;
+    --muted:#a19f9d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  .page{max-width:1240px;margin:0 auto;padding:20px 28px}
+  .back{font-size:13px;color:var(--sub);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-bottom:12px}
+  .titlerow{display:flex;align-items:center;gap:12px}
+  .titlerow h1{font-size:24px;margin:0;font-weight:600}
+  .active{font-size:12px;color:var(--brand-d);background:#eff6fc;border:1px solid #cfe4f7;padding:2px 10px;border-radius:12px}
+  .portal{margin-left:auto;font-size:13px;color:var(--sub);border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:#fff;cursor:pointer}
+  .meta{font-size:12.5px;color:var(--sub);margin:8px 0 2px}
+  .meta code{background:#fdeef0;color:#a4262c;padding:1px 5px;border-radius:4px;font-size:11.5px}
+  .meta a{color:var(--brand);text-decoration:none}
+  /* tabs */
+  .tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:16px 0 0}
+  .tab{padding:10px 0;font-size:14px;color:var(--sub);border-bottom:2px solid transparent;cursor:default}
+  .tab.active{color:var(--ink);border-bottom-color:var(--brand);font-weight:600}
+  /* AW toggle */
+  .toggle{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 16px;margin:18px 0 6px}
+  .toggle .sw{width:42px;height:23px;border-radius:12px;background:#c8c6c4;position:relative;cursor:pointer;transition:.15s;flex:0 0 42px}
+  .toggle .sw.on{background:var(--aw)}
+  .toggle .sw i{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.15s}
+  .toggle .sw.on i{left:21px}
+  .toggle .lab b{font-size:13.5px} .toggle .lab div{font-size:12px;color:var(--sub)}
+  .toggle .state{margin-left:auto;font-size:12px;font-weight:600;padding:3px 10px;border-radius:10px;background:#f3f2f1;color:var(--sub)}
+  .toggle .state.on{background:var(--awbg);color:var(--aw);border:1px solid var(--awline)}
+  /* phase list */
+  .phase{display:flex;gap:16px;padding:18px 4px;border-bottom:1px solid var(--line);position:relative}
+  .num{width:30px;height:30px;border-radius:50%;flex:0 0 30px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:var(--brand);color:#fff;margin-top:2px}
+  .num.na{background:#edebe9;color:var(--muted)}
+  .pbody{flex:1}
+  .pbody h3{margin:0 0 6px;font-size:16px}
+  .pbody .desc{font-size:13px;color:#3b3a39;margin:0 0 4px;max-width:95ch}
+  .link{font-size:13px;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:4px}
+  .chev{color:var(--muted);font-size:13px;align-self:flex-start;margin-top:6px}
+  /* today / AW blocks */
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:8px}
+  .lbl.all{background:var(--allbg);color:var(--all);border:1px solid #cfe4f7}
+  .lbl.aw{background:var(--awbg);color:var(--aw);border:1px solid var(--awline)}
+  .today{margin:10px 0 0}
+  .today ul{margin:6px 0 0;padding-left:18px;font-size:13px} .today li{margin:3px 0}
+  .awbox{margin-top:12px;border:1px solid var(--awline);border-left:3px solid var(--aw);background:var(--awbg);border-radius:7px;padding:11px 13px}
+  .awbox .hd{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--aw)}
+  .awbox ul{margin:8px 0 0;padding-left:18px;font-size:12.8px} .awbox li{margin:4px 0}
+  .awbox .gate{margin-top:8px;font-size:11.5px;font-style:italic;color:var(--aw)}
+  .awbox code{background:#efe7fa;color:#5b3f92;padding:1px 5px;border-radius:4px;font-size:11px}
+  .awbox.off{border-left-color:var(--muted);background:#faf9f8;border-color:var(--line)}
+  .awbox.off .hd{color:var(--muted)} .awbox.off .body{display:none}
+  .awbox.off .naflag{display:block}
+  .awbox .naflag{display:none;font-size:12px;color:var(--muted)}
+  .awbox.off .gate{display:none}
+  .noteline{font-size:12px;color:var(--warn);background:var(--warnbg);border:1px solid #f2e2a8;border-radius:6px;padding:8px 10px;margin-top:8px}
+  .legend{display:flex;gap:10px;margin:14px 0 2px;flex-wrap:wrap;font-size:11px}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="#">← Back to Tool Onboarding</a>
+  <div class="titlerow">
+    <h1>AdminCenter-AdminHeadline</h1>
+    <span class="active">Active</span>
+    <button class="portal">⤢ View in Augloop Portal</button>
+  </div>
+  <div class="meta">Tool ID: <code>12e0617f-c01e-49d2-a331-886baf362916</code> · Product DRI: <a href="#">macplat@microsoft.com</a> · Engineering DRI: <a href="#">natashasun@microsoft.com</a> · Plugin</div>
+
+  <div class="tabs">
+    <div class="tab active">Lifecycle</div>
+    <div class="tab">Registration Details</div>
+    <div class="tab">Manifest</div>
+    <div class="tab">ADO Tasks</div>
+    <div class="tab">Observability</div>
+    <div class="tab">Flight Config</div>
+    <div class="tab">Features Progress</div>
+    <div class="tab">Agility</div>
+    <div class="tab">Debug</div>
+  </div>
+
+  <div class="toggle">
+    <div class="sw" id="awsw" onclick="toggleAW()"><i></i></div>
+    <div class="lab"><b>Is this tool for Advanced Work (FluxV4 / inner-grain)?</b>
+      <div>Tool creation &amp; registration are unchanged. This flag only turns the Advanced Work items <b>inside each phase</b> on or off.</div></div>
+    <div class="state" id="awstate">Advanced Work: OFF</div>
+  </div>
+  <div class="legend"><span class="lbl all">ALL TOOLS — today, unchanged</span><span class="lbl aw">ADVANCED WORK — only if this tool is for Advanced Work</span></div>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="num">1</div>
+    <div class="pbody">
+      <h3>Phase 1: Pre-Coding Gate</h3>
+      <p class="desc">Generate your query sets and get design approval before implementation.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul>
+          <li>Generate trigger / non-trigger query sets (SubstrateTools <b>QuerySetGen</b>).</li>
+          <li>Copilot Design Review (async, Alchemy vTeam): descriptions, trigger quality, conflicts, architecture.</li>
+        </ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li><b>Trigger-query evals also cover inner-grain / Advanced Work &amp; create-task flows</b> — one set for both execution modes. Update Nexus task description + playbook; improve QuerySetGen for inner-grain.</li>
+            <li><b>Design review adds Advanced Work readiness</b> + an <b>Inception Bench reviewer</b> (Maryna, Vinay).</li>
+          </ul>
+          <div class="noteline">Open item (Larissa): FluxV4 uses <b>ChecklistLeo</b>, mainline uses <b>LMC Checklist</b>; ChecklistLeo not fully SEVAL-supported — align format first.</div>
+        </div>
+        <div class="gate">Complete only if this tool is for Advanced Work.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="num">2</div>
+    <div class="pbody">
+      <h3>Phase 2: Registration &amp; Validation</h3>
+      <p class="desc">Register the tool; Nexus generates integration artifacts.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul><li>Tool registered / validated; Nexus generates mainline integration artifacts.</li></ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li>Nexus codegen also emits the <b>Code Harness integration</b> (Helix patch adding the plugin module to the Code Harness list), potentially behind the same flight config.</li>
+            <li>Files: <code>module_codeHarnessPluginList_deepWorkAndO365Dual.json</code>, <code>codeHarnessPluginList.module.json</code>.</li>
+          </ul>
+        </div>
+        <div class="gate">Complete only if this tool is for Advanced Work.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="num">3</div>
+    <div class="pbody">
+      <h3>Phase 3: PR Generation</h3>
+      <p class="desc">Nexus auto-generates your onboarding PR.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul><li>Mainline onboarding PR auto-generated by Nexus.</li></ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li>Also generate the <b>Code Harness integration PR path</b> in addition to the mainline PR.</li>
+            <li>Reference <b>sample PRs</b> demonstrating the Code Harness pattern (Pranita: feasible).</li>
+          </ul>
+        </div>
+        <div class="gate">Complete only if this tool is for Advanced Work.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase">
+    <div class="num">4</div>
+    <div class="pbody">
+      <h3>Phase 4: Test/Debug</h3>
+      <p class="desc">Validate and troubleshoot your tool from the Debug tab.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul><li>Validate the tool end-to-end via the Debug tab (DevUI MCP debugging).</li></ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li>Add <b>Advanced Work MCP calls to the DevUI MCP tab</b> to exercise container-grain invocation (current DevUI debugging is insufficient for it).</li>
+            <li>Add <b>Advanced Work E2E validation guidance</b>.</li>
+          </ul>
+        </div>
+        <div class="gate">Complete only if this tool is for Advanced Work.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase">
+    <div class="num">5</div>
+    <div class="pbody">
+      <h3>Phase 5: PR Deployment Tracking</h3>
+      <p class="desc">Track how your completed PRs roll out via the Feature Progress tab / deployment dashboard.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul><li>Track completed PR rollout and deployment status; observability.</li></ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li><b>Verify monitoring covers the Advanced Work path.</b> <span class="lbl aw">ADV WORK</span></li>
+            <li>Investigate missing Power BI plugin telemetry in Nexus observability. <span class="lbl all">general</span></li>
+            <li>Document rollback criteria and reliability expectations. <span class="lbl all">general</span></li>
+          </ul>
+        </div>
+        <div class="gate">AW-path monitoring applies only if this tool is for Advanced Work; the general items apply to all tools.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase">
+    <div class="num">6</div>
+    <div class="pbody">
+      <h3>Phase 6: Tool Discovery &amp; Fine-Tuning</h3>
+      <p class="desc">Confirm the tool is triggered, then fine-tune discoverability.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul><li>Run a manual query in the dev UI against SDF to confirm triggering; discoverability testing; outer-loop evaluation (precision, recall, parameter accuracy).</li></ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li>Add <b>Advanced Work–specific quality guidance</b> giving separate visibility into inner-grain quality (beyond precision / recall / parameter accuracy).</li>
+          </ul>
+        </div>
+        <div class="gate">Complete only if this tool is for Advanced Work.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+  <!-- PHASE 7 -->
+  <div class="phase">
+    <div class="num">7</div>
+    <div class="pbody">
+      <h3>Phase 7: SEVAL &amp; Flight Review</h3>
+      <p class="desc">Run SEVAL and prepare for flight review before shipping broadly.</p>
+      <div class="today"><span class="lbl all">ALL TOOLS · today</span>
+        <ul>
+          <li>SEVALs: <b>1K, DA, RAI regression, Shadow experiment</b>.</li>
+          <li>Flight review, progression <b>SDF → MSIT → WW</b>.</li>
+          <li>Compliance sign-offs: Compliance, Security, Privacy, RAI.</li>
+        </ul>
+      </div>
+      <div class="awbox off" data-aw>
+        <div class="hd"><span class="lbl aw">ADVANCED WORK</span> Added for Advanced Work</div>
+        <div class="naflag">Not applicable — this tool is not onboarding for Advanced Work.</div>
+        <div class="body">
+          <ul>
+            <li><b>FluxV4 SEVALs + inner-grain validation</b> on the unified query set.</li>
+            <li><b>Inception Bench:</b> fill the <b>Inception Bench Intake Request</b>; run the <b>regression set</b>; add Inception Bench to the <b>Flight Review Job Group</b>; attach regression evidence (like DA). Needs ChecklistLeo assertions in SEVAL, pass/fail thresholds, regression-handling templates.</li>
+            <li><b>Test-cluster validation</b> also runs <b>Inception Bench execution</b>.</li>
+            <li><b>Enable Worldwide</b> also requires the <b>Advanced Mode Template Request Intake</b> (new Nexus task, parallel to Security / Privacy / RAI signoff).</li>
+            <li><b>Rollout approvals:</b> AdvancedWork crew + BizChat Deepwork BPR — replaces the separate CLI Technical Design Review / AW forums with this one gate.</li>
+          </ul>
+        </div>
+        <div class="gate">FluxV4 SEVALs and the Inception Bench items must be completed only if this tool is for Advanced Work.</div>
+      </div>
+    </div>
+    <div class="chev">▲</div>
+  </div>
+
+</div>
+
+<script>
+  var awOn = false;
+  function toggleAW(){
+    awOn = !awOn;
+    document.getElementById('awsw').classList.toggle('on', awOn);
+    var st = document.getElementById('awstate');
+    st.textContent = 'Advanced Work: ' + (awOn ? 'ON' : 'OFF');
+    st.classList.toggle('on', awOn);
+    document.querySelectorAll('.awbox[data-aw]').forEach(function(b){ b.classList.toggle('off', !awOn); });
+  }
+</script>
+</body>
+</html>
