@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nexus · Advanced Work Onboarding — Mockup</title>
+<style>
+  :root{
+    --bg:#f3f2f1; --panel:#fff; --ink:#242424; --sub:#616161; --line:#e1dfdd;
+    --brand:#0f6cbd; --brand-d:#115ea3; --good:#0e700e; --goodbg:#e6f4e6;
+    --warn:#8a6a00; --warnbg:#fff4ce; --bad:#a4262c; --badbg:#fdeef0; --chip:#eef1f5;
+    --all:#0f6cbd; --allbg:#eff6fc; --aw:#8764b8; --awbg:#f3eefb;
+    --shadow:0 1.6px 3.6px rgba(0,0,0,.13),0 .3px .9px rgba(0,0,0,.11);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  header{background:#fff;border-bottom:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+  header .logo{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#0f6cbd,#8764b8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+  header h1{font-size:15px;margin:0;font-weight:600}
+  header .env{margin-left:auto;font-size:12px;color:var(--sub);border:1px solid var(--line);padding:3px 8px;border-radius:12px}
+  .wrap{max-width:1180px;margin:18px auto;padding:0 18px;display:grid;grid-template-columns:280px 1fr;gap:18px}
+  /* step rail */
+  .rail{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;height:fit-content;box-shadow:var(--shadow)}
+  .rail h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);margin:2px 0 12px}
+  .step{display:flex;gap:10px;align-items:flex-start;padding:9px 8px;border-radius:7px;cursor:pointer;position:relative}
+  .step:hover{background:#faf9f8}
+  .step .dot{width:22px;height:22px;border-radius:50%;flex:0 0 22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1.5px solid var(--line);color:var(--sub);background:#fff}
+  .step.active{background:#eef4fb}
+  .step.active .dot{background:var(--brand);border-color:var(--brand);color:#fff}
+  .step .t{font-size:13px;line-height:1.25;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .step .s{font-size:11px;color:var(--sub)}
+  /* applicability badges */
+  .ap{font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;letter-spacing:.03em;white-space:nowrap}
+  .ap.all{background:var(--allbg);color:var(--all);border:1px solid #cfe4f7}
+  .ap.aw{background:var(--awbg);color:var(--aw);border:1px solid #ddd0f0}
+  .step.aw-only.dim{opacity:.42}
+  .step.aw-only.dim .dot{border-style:dashed}
+  /* main */
+  .main{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+  .screen{display:none;padding:22px 24px}
+  .screen.on{display:block}
+  .crumb{font-size:12px;color:var(--sub);margin-bottom:2px}
+  .screen h3{margin:0 0 4px;font-size:19px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .screen .lead{color:var(--sub);margin:0 0 18px;max-width:74ch}
+  .card{border:1px solid var(--line);border-radius:9px;padding:16px;background:#fff;margin-bottom:14px}
+  .card h4{margin:0 0 10px;font-size:13px;display:flex;align-items:center;gap:8px}
+  .apbig{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}
+  .apbig.all{background:var(--allbg);color:var(--all);border:1px solid #cfe4f7}
+  .apbig.aw{background:var(--awbg);color:var(--aw);border:1px solid #ddd0f0}
+  .ctx{border:1px solid var(--line);border-left:3px solid var(--aw);border-radius:6px;padding:11px 13px;margin:10px 0;background:var(--awbg);font-size:12.5px}
+  .ctx.all{border-left-color:var(--all);background:var(--allbg)}
+  .ctx .h{font-weight:600;margin-bottom:3px}
+  .ctx .d{color:var(--sub)}
+  ul.tk{margin:8px 0 0;padding-left:18px;font-size:12.5px} ul.tk li{margin:4px 0}
+  table.q{width:100%;border-collapse:collapse;font-size:12.5px}
+  table.q th,table.q td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  table.q th{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
+  .pill{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block}
+  .pill.all{background:var(--allbg);color:var(--all)} .pill.aw{background:var(--awbg);color:var(--aw)}
+  .toggle{display:flex;align-items:center;gap:10px;background:#faf9f8;border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-bottom:16px}
+  .toggle .sw{width:40px;height:22px;border-radius:12px;background:#c8c6c4;position:relative;cursor:pointer;transition:.15s;flex:0 0 40px}
+  .toggle .sw.on{background:var(--aw)}
+  .toggle .sw i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+  .toggle .sw.on i{left:20px}
+  .toggle .lab b{font-size:13px} .toggle .lab div{font-size:12px;color:var(--sub)}
+  .banner{background:var(--awbg);border:1px solid #ddd0f0;border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--aw);margin-bottom:16px;display:none}
+  .banner.on{display:block}
+  .legend{display:flex;gap:8px;margin:10px 0 0;flex-wrap:wrap}
+  .btnrow{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+  .btn{border:1px solid var(--brand);background:var(--brand);color:#fff;padding:8px 14px;border-radius:5px;font:inherit;font-weight:600;cursor:pointer}
+  .btn:hover{background:var(--brand-d)} .btn.ghost{background:#fff;color:var(--brand)} .btn.ghost:hover{background:#eff6fc}
+  .skipflag{font-size:12px;color:var(--sub);font-style:italic;margin-top:8px;display:none}
+  .skipflag.on{display:block}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">N</div>
+  <h1>Nexus · Onboarding &amp; Registration</h1>
+  <span class="env">Mockup — unified Advanced Work onboarding</span>
+</header>
+
+<div class="wrap">
+  <!-- STEP RAIL -->
+  <nav class="rail">
+    <h2>Registration &amp; Validation</h2>
+    <div class="step active" data-k="intake" onclick="show('intake',this)">
+      <div class="dot">1</div><div><div class="t">Nexus tool intake <span class="ap all">ALL</span></div><div class="s">MCP · Plugin · Agent Skill</div></div></div>
+    <div class="step" data-k="queries" onclick="show('queries',this)">
+      <div class="dot">2</div><div><div class="t">Trigger queries <span class="ap all">ALL</span></div><div class="s">Outer + inner-grain sets</div></div></div>
+    <div class="step" data-k="review" onclick="show('review',this)">
+      <div class="dot">3</div><div><div class="t">Copilot design review <span class="ap all">ALL</span></div><div class="s">+ AW readiness review</div></div></div>
+    <div class="step" data-k="register" onclick="show('register',this)">
+      <div class="dot">4</div><div><div class="t">Registration / codegen <span class="ap all">ALL</span></div><div class="s">Mainline + Code Harness</div></div></div>
+    <div class="step" data-k="seval" onclick="show('seval',this)">
+      <div class="dot">5</div><div><div class="t">SEVAL evaluations <span class="ap all">ALL</span></div><div class="s">1K · DA · RAI · Shadow</div></div></div>
+    <div class="step aw-only" data-k="inception" onclick="show('inception',this)">
+      <div class="dot">6</div><div><div class="t">Inception Bench <span class="ap aw">ADV WORK</span></div><div class="s">Intake + regression set</div></div></div>
+    <div class="step" data-k="flight" onclick="show('flight',this)">
+      <div class="dot">7</div><div><div class="t">Flight review <span class="ap all">ALL</span></div><div class="s">SDF → MSIT → WW</div></div></div>
+    <div class="step aw-only" data-k="template" onclick="show('template',this)">
+      <div class="dot">8</div><div><div class="t">Adv Mode Template Intake <span class="ap aw">ADV WORK</span></div><div class="s">Parallel to signoffs</div></div></div>
+    <div class="step" data-k="signoff" onclick="show('signoff',this)">
+      <div class="dot">9</div><div><div class="t">Compliance sign-offs <span class="ap all">ALL</span></div><div class="s">Sec · Privacy · RAI</div></div></div>
+
+    <div class="legend">
+      <span class="ap all">ALL — every tool</span>
+      <span class="ap aw">ADV WORK — only if Advanced Work</span>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Shared Advanced Work toggle lives at top of every screen via JS-controlled banner -->
+
+    <!-- 1. INTAKE -->
+    <section class="screen on" id="intake">
+      <div class="crumb">Step 1 of 9 · Registration &amp; Validation</div>
+      <h3>Nexus tool intake <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">Every tool — MCP server, Plugin, or Agent Skill — starts here. Design review cannot happen before intake, so this is the first task in the flow.</p>
+
+      <div class="toggle">
+        <div class="sw" id="awsw" onclick="toggleAW()"><i></i></div>
+        <div class="lab"><b>Is this tool for Advanced Work (FluxV4 / inner-grain)?</b>
+          <div>This one answer decides which <span class="pill aw">ADV WORK</span> tasks below become required. Flip it to preview.</div></div>
+      </div>
+
+      <div class="card">
+        <h4>📋 Intake form</h4>
+        <ul class="tk">
+          <li>Tool type: MCP / Plugin / Agent Skill</li>
+          <li>Name, owners, ICM, business justification</li>
+          <li><b>Advanced Work?</b> — Yes / No (gates the inner-grain tasks)</li>
+        </ul>
+        <div class="ctx all"><div class="h">Applies to: ALL tools</div>
+          <div class="d">Required for every onboarding. The "Advanced Work?" answer is what turns the purple tasks on or off downstream.</div></div>
+      </div>
+
+      <div class="btnrow"><button class="btn" onclick="next('queries')">Next: Trigger queries →</button></div>
+    </section>
+
+    <!-- 2. QUERIES -->
+    <section class="screen" id="queries">
+      <div class="crumb">Step 2 of 9 · Registration &amp; Validation</div>
+      <h3>Create trigger queries <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">Generate one evaluation set. Outer-grain coverage is required for every tool; inner-grain / create-task coverage is added only for Advanced Work.</p>
+      <div class="banner" id="b-queries"><b>Advanced Work is ON</b> — also generate inner-grain and create-task-style queries so a single set covers both execution modes.</div>
+
+      <div class="card">
+        <h4>🧩 Query coverage</h4>
+        <table class="q">
+          <tr><th>Coverage</th><th>Applies to</th></tr>
+          <tr><td>Outer-grain trigger / non-trigger (QuerySetGen)</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Inner-grain / Advanced Work scenarios</td><td><span class="pill aw">ADV WORK</span></td></tr>
+          <tr><td>Create-task-style Advanced Work flows</td><td><span class="pill aw">ADV WORK</span></td></tr>
+        </table>
+        <div class="ctx"><div class="h">Complete inner-grain coverage only if this tool is for Advanced Work</div>
+          <div class="d">Open item (Larissa): FluxV4 uses <b>ChecklistLeo</b>, mainline uses <b>LMC Checklist</b>; ChecklistLeo is not fully SEVAL-supported — align on format before this is mandatory.</div></div>
+        <div class="skipflag" id="s-queries">Advanced Work is OFF — inner-grain query coverage is skipped for this tool.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('intake')">← Back</button><button class="btn" onclick="next('review')">Next →</button></div>
+    </section>
+
+    <!-- 3. REVIEW -->
+    <section class="screen" id="review">
+      <div class="crumb">Step 3 of 9 · Registration &amp; Validation</div>
+      <h3>Copilot design review <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">Alchemy vTeam reviews descriptions, trigger quality, and architecture for every tool. Advanced Work readiness review is added only when Advanced Work is intended.</p>
+      <div class="banner" id="b-review"><b>Advanced Work is ON</b> — adds an Advanced Work readiness review and an Inception Bench reviewer (suggested: Maryna, Vinay).</div>
+      <div class="card">
+        <h4>🔍 Review scope</h4>
+        <table class="q">
+          <tr><th>Review area</th><th>Applies to</th></tr>
+          <tr><td>Descriptions · trigger quality · architecture · conflicts</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Advanced Work readiness · inner-grain scenarios</td><td><span class="pill aw">ADV WORK</span></td></tr>
+          <tr><td>Inception Bench reviewer added to vTeam</td><td><span class="pill aw">ADV WORK</span></td></tr>
+        </table>
+        <div class="ctx"><div class="h">Add the Advanced Work reviewer only if this tool is for Advanced Work</div>
+          <div class="d">Otherwise the standard mainline review applies unchanged.</div></div>
+        <div class="skipflag" id="s-review">Advanced Work is OFF — AW readiness review is skipped.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('queries')">← Back</button><button class="btn" onclick="next('register')">Next →</button></div>
+    </section>
+
+    <!-- 4. REGISTER -->
+    <section class="screen" id="register">
+      <div class="crumb">Step 4 of 9 · Registration &amp; Validation</div>
+      <h3>Registration &amp; auto-generated code <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">Nexus generates the mainline integration + onboarding PR for every tool. It additionally generates the Advanced Work Code Harness integration only for Advanced Work tools.</p>
+      <div class="banner" id="b-register"><b>Advanced Work is ON</b> — Nexus also emits the Code Harness integration (Helix patch + module list) behind the same flight config.</div>
+      <div class="card">
+        <h4>⚙️ Generated artifacts</h4>
+        <table class="q">
+          <tr><th>Artifact</th><th>Applies to</th></tr>
+          <tr><td>Mainline integration + onboarding PR</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Code Harness integration + Helix patch</td><td><span class="pill aw">ADV WORK</span></td></tr>
+          <tr><td><code>module_codeHarnessPluginList_deepWorkAndO365Dual.json</code></td><td><span class="pill aw">ADV WORK</span></td></tr>
+          <tr><td><code>codeHarnessPluginList.module.json</code></td><td><span class="pill aw">ADV WORK</span></td></tr>
+        </table>
+        <div class="ctx"><div class="h">Code Harness integration is generated only if this tool is for Advanced Work</div>
+          <div class="d">Pranita: proposal is feasible — link sample PRs demonstrating the pattern.</div></div>
+        <div class="skipflag" id="s-register">Advanced Work is OFF — only the mainline integration is generated.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('review')">← Back</button><button class="btn" onclick="next('seval')">Next →</button></div>
+    </section>
+
+    <!-- 5. SEVAL -->
+    <section class="screen" id="seval">
+      <div class="crumb">Step 5 of 9 · Registration &amp; Validation</div>
+      <h3>SEVAL evaluations <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">Mainline SEVALs run for every tool. FluxV4 and inner-grain validation run only for Advanced Work.</p>
+      <div class="banner" id="b-seval"><b>Advanced Work is ON</b> — also run FluxV4 SEVALs and inner-grain validation on the unified query set.</div>
+      <div class="card">
+        <h4>🧪 Required SEVALs</h4>
+        <table class="q">
+          <tr><th>Evaluation</th><th>Applies to</th></tr>
+          <tr><td>1K</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>DA</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>RAI regression</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Shadow experiment</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td><b>FluxV4 SEVALs</b></td><td><span class="pill aw">ADV WORK</span></td></tr>
+          <tr><td><b>Inner-grain validation</b></td><td><span class="pill aw">ADV WORK</span></td></tr>
+        </table>
+        <div class="ctx"><div class="h">Run FluxV4 / inner-grain SEVALs only if this tool is for Advanced Work</div>
+          <div class="d">Non–Advanced Work tools complete just the four mainline SEVALs.</div></div>
+        <div class="skipflag" id="s-seval">Advanced Work is OFF — FluxV4 and inner-grain SEVALs are skipped.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('register')">← Back</button><button class="btn" onclick="next('inception')">Next →</button></div>
+    </section>
+
+    <!-- 6. INCEPTION BENCH -->
+    <section class="screen" id="inception">
+      <div class="crumb">Step 6 of 9 · Registration &amp; Validation</div>
+      <h3>Inception Bench <span class="apbig aw">ADVANCED WORK ONLY</span></h3>
+      <p class="lead">This task is required <b>only if this tool is for Advanced Work</b>. If Advanced Work is off, skip it entirely.</p>
+      <div class="banner" id="b-inception"><b>Advanced Work is ON</b> — Inception Bench intake + regression are required before flight review.</div>
+      <div class="card">
+        <h4>🎯 Inception Bench requirements</h4>
+        <ul class="tk">
+          <li>Fill the <b>Inception Bench Intake Request</b></li>
+          <li>Run the <b>Inception Bench regression set</b> (non-regression check)</li>
+          <li>Add Inception Bench to the Flight Review Job Group</li>
+          <li>Attach regression evidence for flight review (modeled on DA evidence)</li>
+        </ul>
+        <div class="ctx"><div class="h">Complete Inception Bench only if this tool is for Advanced Work</div>
+          <div class="d">Depends on ChecklistLeo, LMC assertions, and the SEVAL platform; define pass/fail thresholds + regression-handling templates.</div></div>
+        <div class="skipflag on" id="s-inception">Advanced Work is OFF — this entire task does not apply and is hidden from the partner.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('seval')">← Back</button><button class="btn" onclick="next('flight')">Next →</button></div>
+    </section>
+
+    <!-- 7. FLIGHT -->
+    <section class="screen" id="flight">
+      <div class="crumb">Step 7 of 9 · Registration &amp; Validation</div>
+      <h3>Unified flight review <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">One rollout path — SDF → MSIT → WW — with no separate Advanced Work review forum. Inception Bench evidence is attached only for Advanced Work tools.</p>
+      <div class="banner" id="b-flight"><b>Advanced Work is ON</b> — attach Inception Bench regression evidence; rollout also needs AdvancedWork crew + Deepwork BPR approval.</div>
+      <div class="card">
+        <h4>🚀 Flight review inputs</h4>
+        <table class="q">
+          <tr><th>Input</th><th>Applies to</th></tr>
+          <tr><td>Standard flight-review job template</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Progression SDF → MSIT → WW</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Inception Bench regression evidence</td><td><span class="pill aw">ADV WORK</span></td></tr>
+          <tr><td>AdvancedWork crew + Deepwork BPR approval</td><td><span class="pill aw">ADV WORK</span></td></tr>
+        </table>
+        <div class="ctx"><div class="h">Inception Bench evidence + AW approvals required only if this tool is for Advanced Work</div>
+          <div class="d">Replaces the separate CLI Technical Design Review and AW forums with one gate.</div></div>
+        <div class="skipflag" id="s-flight">Advanced Work is OFF — standard flight review only.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('inception')">← Back</button><button class="btn" onclick="next('template')">Next →</button></div>
+    </section>
+
+    <!-- 8. TEMPLATE -->
+    <section class="screen" id="template">
+      <div class="crumb">Step 8 of 9 · Registration &amp; Validation</div>
+      <h3>Advanced Mode Template Request intake <span class="apbig aw">ADVANCED WORK ONLY</span></h3>
+      <p class="lead">A new Nexus task category, parallel to Security / Privacy / RAI signoff. Required <b>only if this tool is for Advanced Work</b>, at the WW-enable step.</p>
+      <div class="banner" id="b-template"><b>Advanced Work is ON</b> — submit the Advanced Mode Template Request before enabling Worldwide.</div>
+      <div class="card">
+        <h4>🗂️ Template request</h4>
+        <ul class="tk">
+          <li>Submit Advanced Mode Template Request Intake (WW-enable gate)</li>
+          <li>Verify monitoring covers the Advanced Work path</li>
+          <li>Add Advanced Work MCP calls to the DevUI MCP tab for container-grain validation</li>
+        </ul>
+        <div class="ctx"><div class="h">Complete this intake only if this tool is for Advanced Work</div>
+          <div class="d">Also document rollback criteria and reliability expectations (general).</div></div>
+        <div class="skipflag on" id="s-template">Advanced Work is OFF — this task does not apply and is hidden from the partner.</div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('flight')">← Back</button><button class="btn" onclick="next('signoff')">Next →</button></div>
+    </section>
+
+    <!-- 9. SIGNOFF -->
+    <section class="screen" id="signoff">
+      <div class="crumb">Step 9 of 9 · Registration &amp; Validation</div>
+      <h3>Compliance sign-offs <span class="apbig all">ALL TOOLS</span></h3>
+      <p class="lead">Compliance, Security, Privacy, and RAI sign-offs are required for every tool regardless of Advanced Work.</p>
+      <div class="card">
+        <h4>✅ Required sign-offs</h4>
+        <table class="q">
+          <tr><th>Sign-off</th><th>Applies to</th></tr>
+          <tr><td>Compliance</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Security</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>Privacy</td><td><span class="pill all">ALL</span></td></tr>
+          <tr><td>RAI</td><td><span class="pill all">ALL</span></td></tr>
+        </table>
+        <div class="ctx all"><div class="h">Applies to: ALL tools</div>
+          <div class="d">Advanced Mode Template Request (step 8) runs in parallel to these for Advanced Work tools.</div></div>
+      </div>
+      <div class="btnrow"><button class="btn ghost" onclick="next('template')">← Back</button><button class="btn">Finish onboarding</button></div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  var awOn = false;
+  function show(id, el){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on')});
+    document.getElementById(id).classList.add('on');
+    document.querySelectorAll('.rail .step').forEach(function(s){s.classList.remove('active')});
+    if(el) el.classList.add('active');
+    else { var r=document.querySelector('.rail .step[data-k="'+id+'"]'); if(r) r.classList.add('active'); }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function next(id){ show(id, null); }
+  function toggleAW(){
+    awOn = !awOn;
+    document.getElementById('awsw').classList.toggle('on', awOn);
+    // dim Advanced-Work-only rail steps when AW is off
+    document.querySelectorAll('.step.aw-only').forEach(function(s){ s.classList.toggle('dim', !awOn); });
+    // banners on when AW on
+    ['queries','review','register','seval','inception','flight','template'].forEach(function(k){
+      var b=document.getElementById('b-'+k); if(b) b.classList.toggle('on', awOn);
+      var s=document.getElementById('s-'+k); if(s) s.classList.toggle('on', !awOn);
+    });
+  }
+  // initialize dimmed state (AW off by default)
+  document.querySelectorAll('.step.aw-only').forEach(function(s){ s.classList.add('dim'); });
+</script>
+</body>
+</html>
